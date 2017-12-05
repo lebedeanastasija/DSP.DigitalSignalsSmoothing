@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="lib/d3/d3.min.js"></script>
+    <script src="main.js"></script>
+    <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body onload="init()">
+    <table class="menu-table">
+        <thead>
+            <tr>
+                <td>1) Исследуемый сигнал:</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><button class="menu-btn" onclick="task1()">построить</button></td>
+            </tr>
+            <tr>
+                <td>2) Сглаживание по методу:</td>
+            </tr>
+            <tr>
+                <td><button class="menu-btn" onclick="task2()">а - скользящего усреднения</button></td>
+                <td><button class="menu-btn" onclick="task3()">б - параболы четвертой степени</button></td>
+                <td><button class="menu-btn" onclick="task4()">в - медианной фильтрации</button></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
