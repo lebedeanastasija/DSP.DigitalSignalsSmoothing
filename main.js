@@ -51,9 +51,7 @@ let svgContainer,
     scale = 30;
 
 let N = 256;
-let phase = Math.PI / 24;
-let A = 10;
-let f = 1;
+let K = 3;
 
 let signalVector;
 
@@ -70,14 +68,16 @@ function task1() {
     clearSvgContainer(svgContainer);
     drawAxes(xAxisLength, yAxisLength, startPoint, scale, 1);
 
-    signalVector = getTestSignalVector(0, A, N, N, f);
-ы
+    signalVector = getTestSignalVector(N, N * 2);
     drawFunctionGraph(signalVector, colors[5], 1, scale, 1);
 }
 
 function task2() {
     clearSvgContainer(svgContainer);
     drawAxes(xAxisLength, yAxisLength, startPoint, scale, 1);
+
+    let signal = getMovingAveragingSignalVector(K, N * 2);
+    drawFunctionGraph(signal, colors[5], 1, scale, 1);
 }
 
 function task3() {
@@ -90,22 +90,54 @@ function task4() {
     drawAxes(xAxisLength, yAxisLength, startPoint, scale, 1);
 }
 
-function getTestSignalVector(initPhase, amplitude, period, count, oscillation) {
+function getTestSignalVector(period, count) {
     let result = [];
     for(let n = 0; n < count; n++) {
-        let y = testSignal(initPhase, amplitude, period, oscillation, n);
+        let y = testSignal(period, n);
         result.push({y: y, x: n});
     }
     return result;
 }
 
-function testSignal(initPhase, amplitude, period, oscillation, n) {
-    //A = 10
-    //initPhase = 0
-    //oscillation = 1
-    return amplitude * Math.cos((2 * Math.PI * oscillation * n) / period - initPhase);
+function testSignal(period, n) {
+    let B1 = 10;
+    let B2 = 0.5;
+    let result = B1 * Math.sin(2 * Math.PI * n / period);
+    for(let j = 50; j <= 70; j++) {
+        result += Math.pow(-1, getRandomInt(0,1)) * B2 * Math.sin(2 * Math.PI * n * j / period);
+    }
+    return result;
 }
 
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function movingAveragingSignal(n, k, count) {
+    let m = (k - 1) / 2;
+    if((n - m) < 0) {
+        return signalVector[n].y;
+    }
+
+    let result = 0;
+
+    for(let j = n - m; j <= n + m && j < count; j++) {
+        if(!signalVector[j]) console.log(j);
+        result += signalVector[j].y;
+    }
+    result *= 1 / k;
+    return result
+}
+
+function getMovingAveragingSignalVector(k, count) {
+    let result = [];
+    signalVector.forEach((x, i) => {
+        let y = movingAveragingSignal(i, k, count);
+        result.push({y: y, x: i});
+    });
+
+    return result;
+}
 
 function drawSvgContainer(width, height, margin) {
     svgContainer = d3.select("body").append("svg")
