@@ -52,6 +52,7 @@ let svgContainer,
 
 let N = 256;
 let K = 3;
+let M = 5;
 
 let signalVector;
 
@@ -75,7 +76,6 @@ function task1() {
 function task2() {
     clearSvgContainer(svgContainer);
     drawAxes(xAxisLength, yAxisLength, startPoint, scale, 1);
-
     let signal = getMovingAveragingSignalVector(K, N * 2);
     drawFunctionGraph(signal, colors[5], 1, scale, 1);
 }
@@ -83,11 +83,22 @@ function task2() {
 function task3() {
     clearSvgContainer(svgContainer);
     drawAxes(xAxisLength, yAxisLength, startPoint, scale, 1);
+    let signal = getFourthDegreeParabolaSignalVector();
+    drawFunctionGraph(signal, colors[5], 1, scale, 1);
 }
 
 function task4() {
     clearSvgContainer(svgContainer);
     drawAxes(xAxisLength, yAxisLength, startPoint, scale, 1);
+    let signal = getSpenserSignalVector();
+    drawFunctionGraph(signal, colors[5], 1, scale, 1);
+}
+
+function task5() {
+    clearSvgContainer(svgContainer);
+    drawAxes(xAxisLength, yAxisLength, startPoint, scale, 1);
+    let signal = getMedianFiltrationSignalVector(M, N * 2);
+    drawFunctionGraph(signal, colors[5], 1, scale, 1);
 }
 
 function getTestSignalVector(period, count) {
@@ -135,7 +146,76 @@ function getMovingAveragingSignalVector(k, count) {
         let y = movingAveragingSignal(i, k, count);
         result.push({y: y, x: i});
     });
+    return result;
+}
 
+function fourthDegreeParabolaSignal(n) {
+    let result = 0;
+    if(signalVector[n - 3]) result += 5 * signalVector[n - 3].y;
+    if(signalVector[n - 2]) result -= 30 * signalVector[n - 2].y;
+    if(signalVector[n - 1]) result += 75 * signalVector[n - 1].y;
+    if(signalVector[n]) result += 131 * signalVector[n].y;
+    if(signalVector[n + 1]) result += 75 * signalVector[n + 1].y;
+    if(signalVector[n + 2]) result -= 30 * signalVector[n + 2].y;
+    if(signalVector[n + 3]) result += 5 * signalVector[n + 3].y;
+    return result / 231;
+}
+
+function getFourthDegreeParabolaSignalVector(){
+    let result = [];
+    signalVector.forEach((x, i) => {
+        let y = fourthDegreeParabolaSignal(i);
+        result.push({y: y, x: i});
+    });
+    return result;
+}
+
+function spenserSignal(n) {
+    let result = 0;
+    if(signalVector[n - 7]) result -= 3 * signalVector[n - 7].y;
+    if(signalVector[n - 6]) result -= 6 * signalVector[n - 6].y;
+    if(signalVector[n - 5]) result -= 5 * signalVector[n - 5].y;
+    if(signalVector[n - 4]) result += 3 * signalVector[n - 4].y;
+
+    if(signalVector[n - 3]) result += 21 * signalVector[n - 3].y;
+    if(signalVector[n - 2]) result += 46 * signalVector[n - 2].y;
+    if(signalVector[n - 1]) result += 67 * signalVector[n - 1].y;
+    if(signalVector[n]) result += 74 * signalVector[n].y;
+    if(signalVector[n + 1]) result += 67 * signalVector[n + 1].y;
+    if(signalVector[n + 2]) result += 46 * signalVector[n + 2].y;
+    if(signalVector[n + 3]) result += 21 * signalVector[n + 3].y;
+
+    if(signalVector[n + 4]) result += 3 * signalVector[n + 4].y;
+    if(signalVector[n + 5]) result -= 5 * signalVector[n + 5].y;
+    if(signalVector[n + 6]) result -= 6 * signalVector[n + 6].y;
+    if(signalVector[n + 7]) result -= 3 * signalVector[n + 7].y;
+    return result / 320;
+}
+
+function getSpenserSignalVector(){
+    let result = [];
+    signalVector.forEach((x, i) => {
+        let y = spenserSignal(i);
+        result.push({y: y, x: i});
+    });
+    return result;
+}
+
+function medianFiltrationSignal(n, m, count) {
+    if(n - (m - 1) / 2 < 0 || n + (m - 1) / 2 > count - 1) return signalVector[n].y;
+    let result = 0;
+    for(let j = n - (m - 1) / 2; j <= n + (m - 1) / 2; j++) {
+        result += signalVector[j].y / m;
+    }
+    return result;
+}
+
+function getMedianFiltrationSignalVector(m, count) {
+    let result = [];
+    signalVector.forEach((x, i) => {
+        let y = medianFiltrationSignal(i, m, count);
+        result.push({y: y, x: i});
+    });
     return result;
 }
 
